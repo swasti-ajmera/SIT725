@@ -1,3 +1,11 @@
 **/*.pdf
 **/*.docx
+**/*.jpg
+**/*.jpeg
+**/*.png
+**/*.mp4
+**/*.pptx
+node_modules
 Week_2/node_modules
+Week_3/node_modules
+Week_4/node_modules

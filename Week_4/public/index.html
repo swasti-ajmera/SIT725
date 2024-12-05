@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!--Import Google Icon Font-->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <!--Import materialize.css-->
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="css/materialize.min.css"
+      media="screen,projection"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+      integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script>
+      async function fetchCats() {
+        try {
+          const response = await fetch("/api/cats");
+          const cats = await response.json();
+          const tableBody = document.getElementById("cat-table-body");
+          tableBody.innerHTML = ""; // Clear existing rows
+
+          cats.forEach((cat) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                      <td>${cat.name || "N/A"}</td>
+                      <td>${cat.age || "N/A"}</td>
+                      <td>${cat.branch || "N/A"}</td>
+                  `;
+            tableBody.appendChild(row);
+          });
+        } catch (error) {
+          console.error("Error fetching cats:", error);
+        }
+      }
+
+      async function addCat(event) {
+        event.preventDefault();
+        const name = document.getElementById("cat-name").value;
+        const age = document.getElementById("cat-age").value;
+        const branch = document.getElementById("cat-breed").value;
+
+        const newCat = { name, age, branch };
+
+        try {
+          const response = await fetch("/api/cat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newCat),
+          });
+
+          if (response.ok) {
+            document.getElementById("cat-form").reset(); // Clear form
+            fetchCats(); // Refresh table
+          } else {
+            console.error("Failed to add cat");
+          }
+        } catch (error) {
+          console.error("Error adding cat:", error);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document
+          .getElementById("fetch-cats-button")
+          .addEventListener("click", fetchCats);
+        document.getElementById("cat-form").addEventListener("submit", addCat);
+      });
+    </script>
+  </head>
+
+  <body class="container my-5">
+    <h1 class="text-center">Cat Collection</h1>
+
+    <!-- Fetch Cats Button -->
+    <div class="text-center mb-4">
+      <button id="fetch-cats-button" class="btn btn-success">
+        Fetch Students
+      </button>
+    </div>
+
+    <!-- Add Cat Form -->
+    <form id="cat-form" class="mb-4">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label for="cat-name" class="form-label">Name</label>
+          <input type="text" id="cat-name" class="form-control" required />
+        </div>
+        <div class="col-md-4">
+          <label for="cat-age" class="form-label">Age</label>
+          <input type="number" id="cat-age" class="form-control" required />
+        </div>
+        <div class="col-md-4">
+          <label for="cat-breed" class="form-label">Branch</label>
+          <input type="text" id="cat-breed" class="form-control" required />
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary mt-3">Add Student</button>
+    </form>
+
+    <!-- Cats Table -->
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Branch</th>
+        </tr>
+      </thead>
+      <tbody id="cat-table-body">
+        <!-- Rows will be populated dynamically -->
+      </tbody>
+    </table>
+    <!--JavaScript at end of body for optimized loading-->
+    <script type="text/javascript" src="js/materialize.min.js"></script>
+    <script type="text/javascript" src="js/extra.js"></script>
+  </body>
+</html>
