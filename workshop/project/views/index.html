@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Materialize CSS -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="css/materialize.min.css"
+      media="screen,projection"
+    />
+
+    <!-- Viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script>
+      async function fetchCats() {
+        try {
+          const response = await fetch("/api/cats");
+          const cats = await response.json();
+          const tableBody = document.getElementById("cat-table-body");
+          tableBody.innerHTML = ""; // Clear existing rows
+
+          cats.forEach((cat) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${cat.name || "N/A"}</td>
+              <td>${cat.age || "N/A"}</td>
+              <td>${cat.branch || "N/A"}</td>
+            `;
+            tableBody.appendChild(row);
+          });
+        } catch (error) {
+          console.error("Error fetching cats:", error);
+        }
+      }
+
+      async function addCat(event) {
+        event.preventDefault();
+        const name = document.getElementById("cat-name").value;
+        const age = document.getElementById("cat-age").value;
+        const branch = document.getElementById("cat-branch").value;
+
+        const newCat = { name, age, branch };
+
+        try {
+          const response = await fetch("/api/cat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newCat),
+          });
+
+          if (response.ok) {
+            document.getElementById("cat-form").reset(); // Clear form
+            fetchCats(); // Refresh table
+          } else {
+            console.error("Failed to add cat");
+          }
+        } catch (error) {
+          console.error("Error adding cat:", error);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document
+          .getElementById("fetch-cats-button")
+          .addEventListener("click", fetchCats);
+        document.getElementById("cat-form").addEventListener("submit", addCat);
+      });
+    </script>
+  </head>
+
+  <body class="container">
+    <h1 class="center-align">Student Collection</h1>
+
+    <!-- Fetch Students Button -->
+    <div class="center-align">
+      <button id="fetch-cats-button" class="btn green">Fetch Students</button>
+    </div>
+
+    <!-- Add Student Form -->
+    <form id="cat-form" class="row">
+      <div class="input-field col s4">
+        <input type="text" id="cat-name" required />
+        <label for="cat-name">Name</label>
+      </div>
+      <div class="input-field col s4">
+        <input type="number" id="cat-age" required />
+        <label for="cat-age">Age</label>
+      </div>
+      <div class="input-field col s4">
+        <input type="text" id="cat-branch" required />
+        <label for="cat-branch">Branch</label>
+      </div>
+      <div class="center-align">
+        <button type="submit" class="btn blue">Add Student</button>
+      </div>
+    </form>
+
+    <!-- Students Table -->
+    <table class="striped">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Branch</th>
+        </tr>
+      </thead>
+      <tbody id="cat-table-body">
+        <!-- Rows will be populated dynamically -->
+      </tbody>
+    </table>
+
+    <!-- Materialize JavaScript -->
+    <script type="text/javascript" src="js/materialize.min.js"></script>
+  </body>
+</html>
